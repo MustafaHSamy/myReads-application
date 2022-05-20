@@ -20,7 +20,6 @@ function App() {
 
   document.addEventListener("click", (e) => {
     if (e.target.classList.contains("back-btn")) {
-      console.log("clearing query");
       e.target.value = "";
       setQuery("");
       setBooks([]);
@@ -48,13 +47,6 @@ function App() {
     getBooks();
   }, [query]);
 
-  const updateShelf = (book, shelf) => {
-    BooksAPI.update(book, shelf);
-    book.shelf = shelf;
-    const update = [...shelvesBooks.filter((b) => b.id !== book.id), book];
-    setShelvesBooks(update);
-  };
-
   document.addEventListener("click", (e) => {
     let shelf = e.target.id;
     if (
@@ -65,7 +57,10 @@ function App() {
     ) {
       async function manageBook() {
         const book = await BooksAPI.get(e.target.getAttribute("book"));
-        updateShelf(book, shelf);
+        book.shelf = shelf;
+        BooksAPI.update(book, shelf);
+        const myBooks = await BooksAPI.getAll();
+        setShelvesBooks(myBooks);
       }
       manageBook();
     }
